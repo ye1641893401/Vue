@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src='../../../vue-2.4.0.js'></script>
+    <style>
+       .active{
+           background:blue
+       }
+    </style>
+</head>
+<body>
+    <div id = 'app'>
+        <audio :src="songSrcs" controls autoplay></audio>
+        <ul >
+            <!-- :class ={a:bollean} -->
+        <li v-for = "(key,index) in musicData" @click = "show(index)" :class ="{active:musicIndex === index}">
+                <h3>歌名：{{key.name}}</h3>
+                <h5>歌手：{{key.author}}</h3>
+            </li>
+        </ul>
+    </div>
+</body>
+<script>
+    let musicData = [
+		{id:1,name:'于荣光 - 少林英雄',author:'于荣光',songSrc:'./static/于荣光 - 少林英雄.mp3'},
+		{id:2,name:'Joel Adams - Please Dont Go',author:'Joel Adams',songSrc:'./static/Joel Adams - Please Dont Go.mp3'},
+		{id:3,name:'MKJ - Time',author:'MKJ',songSrc:'./static/MKJ - Time.mp3'},
+		{id:4,name:'Russ - Psycho (Pt. 2)',author:'Russ',songSrc:'./static/Russ - Psycho (Pt. 2).mp3'}
+	];
+  new Vue({
+      el:'#app',
+      data:{
+        musicData:musicData,
+        musicIndex:0,
+      },
+      methods:{
+          show(index){
+              this.musicIndex = index
+            //   此时上面的audio路径不能实时变化所以使用computed属性 
+          }
+      },
+      computed:{
+        songSrcs(){
+            return this.musicData[this.musicIndex].songSrc
+        }
+      }
+
+  })
+</script>
+</html>

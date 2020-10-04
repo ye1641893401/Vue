@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id= "app"></div>
+</body>
+<script>
+// 封装v-model
+
+// 添加数组对象
+let itemarr;
+
+// 构造这个函数
+
+function Observer(){
+    this.observables = []
+}
+// 遍历里面添加方法
+Observer.prototype.notify = function(){
+   for(let i = this.observables.length-1;i>=0;i--){
+       this.observables[i].update()
+       
+   }
+}
+
+// 订阅者 添加东西
+Observer.prototype.subscribe = function(){
+    this.observables.push(itemarr)
+}
+
+// 可观察的对象 具备事件触发的能力
+ function Observerable(node,propName,data){
+    this.$node = node 
+    this.$propName = propName
+    this.$data = data
+ }
+
+ Observerable.prototype.update = function(){
+     // 判断是标签节点
+     if(this.$node.nodeType === 1){
+         this.$node.value = this.$data[this.$propName]
+     }else if (this.$node.nodeType === 3){
+         //   文本节点
+    // 触发get 在get内部判断
+         this.$node.nodeValue = this.$data[this.$propName]
+     }
+ }
+
+//  mvvm 是一个构造函数 接受一个options 对象 存起来
+
+function MVVM(options){
+    // 调用实例的对象
+    this.$el = options.el
+    this.$template = options.template;
+    this.$data = options.data // fn
+
+    this.$options = options
+    // 调用函数this.$data 获取数据
+    this.$$data = this.$data() // 数据对象
+
+    this.init()
+}
+
+MVVM.prototype.init = function(){
+    //监视属性 遍历对象
+    this.defineReactive(this.$$data,this.$$data.text)  //{text:"abc"}
+    // 解析dom
+    this.compiler(this.$template,this.$$data)
+}
+
+MVVM.prototype.compiler = function(tem,data){
+    // 将tem插入文本根节点
+    let box = document.querySelector(this.$el)
+    box.innerHTML = tem
+
+    // 分析box 获取其中的指令
+    let nodes = box.children[0].childNodes;
+     // 正则匹配
+     var regexText = /.*\{\{(.*)\}\}.*/; //文本
+     var regexV = /^v-(.*)$/; //v-指令开头
+
+     for(let i = nodes.length - 1;i>=0;i--){
+         let node  = nodes[i];
+        //  文本节点
+         if(node.nodeType === 3){
+           let result = regexText.exec(node.nodeValue)
+
+           if(result){
+               // 获取结果与this.$$data匹配 this.$$data[xxx]
+               // 触发获取
+               this.textMatch(result[1].trim(),node)
+           }
+         }else if(node.nodeType === 1){
+             let nodeAttrs = node.attributes;
+             for(let j= 0 ; j<nodeAttrs.length;j++){
+                 let attr = nodeAttrs[j]
+                 let result = regexV.exec(attr.name);
+
+                 if(result){
+                    console.log(attr.name,attr.value,'被匹配了',result);  
+
+                    // 根据指令 名称干活
+                    this.directive[result[1]](attr.value,node,data)
+                 }
+             }
+         }
+     }
+}
+
+MVVM.prototype.directive = {
+    model:function(propName,node,data){
+        let self = this
+        itemarr = new Observerable(node,propName,data) 
+        // 给一个初始值
+        node.value = data[propName]  //触发get
+        // 给元素添加事件
+        node.addEventListener('input',function(e){
+            // 触发set
+            data[propName] = e.target.value;
+        })
+    }
+}
+
+MVVM.prototype.textMatch = function (propName,node){
+    // 看这里: 1:创建存储信息的行为 可观察对象
+        // 2:将其挂载全局
+        // 3: 触发get函数，并从全局中取出1
+    itemarr = new Observerable(node,propName,this.$$data) 
+    console.log('找到文本节点啦',propName,node);
+            // 替换当前node的值，并赋值为data的数据 
+     node.nodeValue = this.$$data[propName]; // 触发get
+}
+
+MVVM.prototype.defineReactive = function(obj,value){
+    //obj 拿到data是一个对象 return  value ==》》》 
+    // key return {text:''}
+   for (let key in obj){
+       let observer = new Observer() // text
+       Object.defineProperty(obj,key,{
+           set:function(v){
+            // 更新观察者中的所有可观察对象中的节点数据
+            value = v;
+            console.log('set触发了');
+            console.log(observer)
+             // 通知
+             observer.notify();
+           },
+           get:function(){
+            console.log('get触发了');
+             if(itemarr) {
+                 observer.subscribe();
+                 itemarr = null; 
+             }
+             // 为节点初始化的时候触发, 将当前的节点关联上可观察对象，并加入到观察者中
+             return value;
+           }
+       })
+   }
+}
+
+const vm = new MVVM({
+        el:'#app',
+        data() {
+            return {
+                // text 还要是定值
+                text:'abc'
+            }
+        },
+         template:`<div>
+                <input type="text" v-model="text" />
+                {{ text }}
+            </div>`
+    });
+</script>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script>
+ let obj = {name:22}
+
+  //5. obj.hasOwnProperty(prop): 判断prop是否是obj自身的属性
+  console.log(obj.hasOwnProperty('name'), obj.hasOwnProperty('toString'))  // true false
+
+let obj2 = {}
+  for(let i in obj){
+      if(obj.hasOwnProperty(i)){
+          obj2[i] = obj[i]
+      }
+  }
+  console.log(obj2)
+
+</script>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src='../../vue-2.4.0.js'></script>
+</head>
+<body>
+    <!-- 没有脚手架构建项目的时候两个平级组件数据传递 -->
+    <div>
+       <input type="text" v-model = 'msg'></br>
+       {{res[0].name}}
+       <button @click = "changeData">改变</button>
+    </div>
+</body>
+<script>
+ 
+
+ new Vue({
+     el:'div',
+     data:{
+         msg:'',
+         res:[{name:1,age:2}]
+     },
+     methods:{
+        changeData(){
+            this.res[0].name = this.msg
+        }
+     },
+     watch:{
+        res:{
+         
+         handler:function(n,o){
+             console.log(n,n[0].name) 
+             console.log(o,o[0].name) //监视不到旧的值变化
+         },
+        //  immediate: true,
+         deep:true,
+        
+        },
+        msg(newVal,oldVal){
+           console.log(newVal,oldVal)
+        }
+     }
+ })
+
+</script>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src='../vue/vue-2.4.0.js'></script>
+</head>
+<body>
+    <div>
+        <!-- 自动获取焦点 -->
+        <input type="text" v-focus>
+        <h1 v-color= "'pink'">{{msg}}</h1>
+        <h1 v-font= "'300'">{{msg}}</h1>
+    </div>
+</body>
+<script>
+    // 自定义指令 必须v-开头
+Vue.directive('focus',{
+    // 周期函数
+    bind:function(el,colo){  //样式
+        // 指令绑定到元素只执行一次
+        //  el.focus()
+        el.style.color = colo.value
+    },
+    inserted:function(el){ //行为
+        // 元素插入dom 执行
+          el.focus()
+    },
+    updated:function(el){
+        // 更新
+         el.focus()
+    }
+})
+Vue.directive('color',{
+    // 周期函数
+    bind:function(el,colo){
+        // 指令绑定到元素只执行一次
+        // el.focus()
+        el.style.color = colo.value
+    },
+    inserted:function(el){
+        // 元素插入dom 执行
+          
+    },
+    updated:function(el){
+        // 更新
+        // el.focus()
+    }
+})
+  new Vue({
+      el:'div',
+      data:{
+          msg:'sss'
+      },
+    //   私有
+    directives:{
+        font:{
+            bind:function(el,t){
+              el.style.fontWeight = t.value
+            }
+        }
+    }
+
+  })
+</script>
+</html>

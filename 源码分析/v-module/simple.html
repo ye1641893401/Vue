@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script>
+
+const obj = {name:"simple"}
+
+// 触发set改变 obj
+
+obj["name"] = "aaa"
+observer(obj)
+// 遍历对象 拿到 val 值 执行 definepropotype
+
+function observer(data){
+   if(!data || typeof(data) != "object" ){
+       return
+   }
+
+   Object.keys(data).forEach(key =>{
+       defineprototype(key,data,data[key])
+   })
+}
+
+function defineprototype(key,data,val){
+    // 防止对象嵌套
+    observer(val)
+
+   Object.defineProperty(data,val,{
+       configurable:true,
+       enumerable:true,
+       get(){
+           return val
+       },
+       set(vals){
+           console.log("触发set",vals)
+         return val = vals
+       }
+
+   })
+
+}
+
+</script>
+</html>

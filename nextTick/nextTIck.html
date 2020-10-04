@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src='../vue-2.4.0.js'></script>
+</head>
+<body>
+    <div>
+        <button @click="addfocu">点击</button>
+        <input type="text" v-show="show" ref= "input">
+        
+    </div>
+</body>
+<script>
+  new Vue({
+      el:"div",
+      data:{
+          show:false
+      },
+     methods:{
+        addfocu(){
+         this.show = !this.show
+        //  vue异步渲染完成后再来，临时插入元素，这个元素之前不存在，插入以后要对这个元素做一些行为
+        // 这个元素渲染完成后执行的dom操作
+         this.$nextTick(()=>{
+            this.$refs.input.focus()
+         })
+        
+        }
+     }
+  })
+
+</script>
+</html>

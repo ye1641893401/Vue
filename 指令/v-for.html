@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../vue.min.js"></script>
+</head>
+<body>
+    <div id = "app">
+        <p v-for="(item,index) in arrobj" :key="index">
+          {{item.title}}
+        </p>
+        <p v-for="([a,b],index) in content" :key="index">
+            {{a}}---{{b}}
+        </p>
+    </div>
+</body>
+<script>
+ let vm = new Vue({
+     el:"#app",
+     data:{
+         content:[
+           ["111","222"],
+           ["333","444"],
+           ["555","666"],
+           ["777","888"]
+         ],
+
+         arrobj:[
+             {
+                 title:"hahah",
+                 content:[["111","222"],["333","444"]]
+             },
+             {
+                 title:"xxxxx",
+                 content:[["555","666"],["777","888"]]
+             }
+         ]
+     }
+ })
+</script>
+</html>

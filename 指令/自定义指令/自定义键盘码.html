@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src='../vue/vue-2.4.0.js'></script>
+</head>
+<body>
+    <div class = 'app'>
+        {{time | formatTime }}
+        <button v-on:click = 'show'></button>
+        <input v-on:keyup.enter = 'show'>
+        <input v-on:keyup.113 = 'show'>
+        <input v-on:keyup.f2 = 'show'>
+        <!-- 回车触发  键盘码值-->
+        <br>
+        
+    </div>
+</body>
+  <script>
+  document.addEventListener("keyup",function(e){
+            console.log(e)
+            console.log(e.keyCode)
+  })
+//    自定义键盘码
+  Vue.config.keyCodes.f2 = 113
+    new Vue({
+        el:'.app',
+        data:{
+          time: new Date() 
+        } ,
+        methods:{
+            show(e){
+                alert(e)
+            }
+        }
+    })
+  </script>
+</html>

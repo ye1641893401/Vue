@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app"></div>
+</body>
+<script>
+// 观察 订阅 模式
+
+let datas
+function Observer(){
+    this.observerData = []
+}
+
+// 订阅  =====>>>添加数据
+Observer.prototype.subscribe = function(){
+    this.observerData.push(datas)
+}
+
+// 通知 =====》》》跟新
+
+Observer.prototype.notify = function(){
+    // console.log(this.observerData)
+    if(this.observerData.length>0){
+        // Array.prototype.slice.call(this.observerData).foreach(ele=>{
+        this.observerData.forEach(ele=>{
+        // 这个update是数据的原型链上的
+        ele.update()
+       })
+    }
+   
+}
+
+// 观察能力 就是都观察shenmo
+
+ function ObserverAble(node,value,data){
+    this.$node = node //input
+    this.$value = value //v-model = 'xx'
+    this.$data = data // return {text}
+ }
+
+ ObserverAble.prototype.update = function(){
+    
+        console.dir(this.$node.lastElementChild)
+        this.$node.lastElementChild.textContent= this.$data[this.$value]
+ }
+
+//  1.
+function MVVM(option){
+    this.$el = option.el
+    this.$data=option.data
+    this.$template= option.template
+
+    this.$$data = this.$data()
+    // console.log(this.$$data)
+    this.init()
+}
+
+// 2
+
+MVVM.prototype.init = function(){
+    // 1.处理数据
+    this.dealData(this.$$data,this.$$data.text)
+    // 2.编译模板
+    this.complier(this.$el,this.$template)
+}
+
+// 3.处理数据
+
+MVVM.prototype.dealData = function(data,value){
+    /*
+      1.这个数据是一个return出来的对象
+      2.他需要双向数据绑定 所以要使用 一个属性 defineprototype 监视值得变化
+    */
+    let ob = new Observer()
+    for(let key in data){
+        Object.defineProperty(data,key,{
+            set(v){
+                console.log("触发set了"+ v)
+                // 然后把触发的值给node
+                value = v
+                ob.notify()
+            },
+            get(){
+                console.log('触发get了')
+                
+                if(data){
+                   ob.subscribe()
+                   data = null
+                }
+                return value
+            }
+        })
+    }
+}
+
+// 4. 编译模板
+
+MVVM.prototype.complier = function(rootNode,template){
+     let root = document.querySelector(rootNode) 
+     root.innerHTML = template
+
+    // 拿到节点进行属性处理
+
+    let inputNode = root.children[0].children 
+    
+    // console.dir(inputNode[0].attributes)
+    let attrs = inputNode[0].attributes
+    let regexV = /^v-(.*)$/;
+    Array.prototype.slice.call(attrs).forEach(ele =>{
+        // 匹配v-开头
+        // console.log(ele)
+        let res = regexV.exec(ele.name)
+        if(res){
+            // console.log("根据"+res+"指令干活",res[1],ele.value)
+            // 定义方法
+            this.directive[res[1]](inputNode[0],ele.value,this.$$data,root.children[0])
+           
+            datas = new ObserverAble(root.children[0],ele.value,this.$$data) 
+            root.children[0].nodeValue = this.$$data[ele.value]
+        }
+    })
+}
+
+// 5.定义方法
+
+MVVM.prototype.directive = {
+    
+    model(node,value,data,a){
+        // 调用的时候把值给观察对象能力
+        datas =  new ObserverAble(a,value,data)
+    // 发生input事件获取值
+     node.addEventListener("input",(e)=>{
+        console.log(e.target.value,data )
+        // 把这个值给
+        data[value] = e.target.value
+     })
+    },
+}
+ const vm = new MVVM({
+     el:"#app",
+     data:()=>({
+        text:"abc"
+     }),
+     template:`
+        <div>
+                <input type="text" v-model="text" />
+                <span>text </span>
+            </div>
+     `
+ })
+</script>
+</html>

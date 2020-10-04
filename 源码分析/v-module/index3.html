@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+   <div id="app"></div> 
+</body>
+
+<script>
+
+// set 触发通知观察者 触发notify 函数更新数据
+// get 触发了如果有数据 通知 subScribe 订阅者 会把新添加的数据 push 到观察数组中
+// 跟新数据
+// 定义一个全局数据
+let globalitem
+
+// 定义观察数据函数  实际上   this.observerables = ObserAble 观察他
+
+function Observer(){
+    this.observerables = []
+}
+
+// 数据变化更新方法
+
+Observer.prototype.notify = function(){
+    // 如果数据变化触发跟新数据跟新方法
+   
+    for(let i = this.observerables.length-1;i>=0;i--){
+        console.log(1)
+        this.observerables[i].update()
+    }
+}
+
+
+// 把新的数据添加到数据观察队列
+
+Observer.prototype.subscribe = function(){
+    this.observerables.push(globalitem)
+}
+
+// 观察的对象 触发事件的能力
+
+function ObserAble(node,propName,data){
+        this.$node = node
+        this.$propName = propName;
+        this.$data = data
+}
+
+// 跟新数据
+
+ObserAble.prototype.update = function (){
+    // 判断类型跟新
+    console.log(1)
+    if(this.$node.nodeType === 1) {
+            this.$node.value= this.$data[this.$propName];
+        } else if(this.$node.nodeType === 3) {
+            // 会触发get 在get内部判断
+            console.log(1)
+            this.$node.nodeValue = this.$data[this.$propName];
+        }
+}
+
+
+
+
+
+
+  function Mvvm(options){
+    //   获取页面根节点
+        this.$el = options.el
+        this.$data = options.data
+         this.template = options.template
+        this.$$data = this.$data()
+
+        this.init()
+
+  }
+
+Mvvm.prototype.init = function(){
+    // 拿到对象数据遍历
+    this.dealData(this.$$data,this.$$data.text)
+   // 编译模板
+   this.compiler(this.template,this.$$data)   
+}
+
+Mvvm.prototype.dealData = function(obj,value){
+    // obj return {text:'abc'}
+    // let ob = new Observer()
+  for(let key in obj){
+    let ob = new Observer()
+    Object.defineProperty(obj,key,{
+      set:function(v){
+        //   默认值变为用户设置的值
+          value = v
+          console.log('set触发了',value);
+          console.log(ob)
+        //   通知跟新数据
+        ob.notify()
+      },
+      get:function(){
+        // 如果数据有添加到观察数据里
+        if(globalitem){
+            ob.subscribe()
+            // 清空 数据
+            globalitem = null
+        }
+         return value
+      }
+    })
+  }
+   
+}
+
+Mvvm.prototype.compiler = function(template,data){
+      // 正则匹配
+      var regexText = /.*\{\{(.*)\}\}.*/;
+      var regexV = /^v-(.*)$/;
+       let root = document.querySelector(this.$el)
+       root.innerHTML = template
+    // 分析节点拿到里面的属性
+    let nodes = root.children[0].childNodes;
+    // 匹配到文本节点
+    for(let i = nodes.length -1 ; i>=0;i--){
+        if(nodes[i].nodeType === 3){
+          let result = regexText.exec(nodes[i].nodeValue)
+          if(result){
+            //   触发获取 把值覆给节点
+            this.textMatch(result[1].trim(),nodes[i]);
+          }
+       }else if(nodes[i].nodeType === 1){
+        //  node节点拿他的属性
+          let nodeAttr = nodes[i].attributes;
+        //   匹配v- 开头
+
+          for(let j = nodeAttr.length-1 ;j>=0 ;j--){
+              console.log(nodeAttr[j].name,nodeAttr[j].value)
+              let res = regexV.exec(nodeAttr[j].name)
+              console.log(nodeAttr[j].name)
+              if(res){
+
+
+                //  根据指令干活
+                console.log(res)
+                console.log(res[1])
+                 this.directive[res[1]](nodeAttr[j].value,nodes[i],data)
+             
+              }
+         }
+       }
+    }
+    
+
+}
+// 封装指令方法
+Mvvm.prototype.directive = {
+    model:function(propName,node,data){
+        globalitem = new ObserAble(node,propName,data);
+        node.value = data[propName];
+        node.addEventListener('input',(e)=>{
+            //用户输入触发set 倒置上面的 defineProperty 触发
+            data[propName] = e.target.value
+        })
+    }
+}
+Mvvm.prototype.textMatch = function(propName,node){
+          globalitem = new ObserAble(node,propName,this.$$data);
+            console.log('找到文本节点啦',propName,node);
+            // 替换当前node的值，并赋值为data的数据 
+            node.nodeValue = this.$$data[propName]; // 触发get
+
+    }
+// 
+// 编译
+  const vm = new Mvvm({
+      el:"#app",
+      data:()=>({
+          text:'abc'
+      }),
+      template:`<div>
+                <input type="text" v-model="text" />
+                {{ text }}
+            </div>`
+  })
+
+</script>
+</html>

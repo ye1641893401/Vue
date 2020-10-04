@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script>
+ //实现computed 效果
+ //3. Object.defineProperty(obj, propertyName, {}): 给对象添加属性(指定描述符)
+ const obj = {
+    firstName: 'A',
+    lastName: 'B'
+  }
+  //obj.fullName = 'A-B'
+  Object.defineProperty(obj, 'fullName', {
+    // 属性描述符:
+
+    // 数据描述符
+
+    //访问描述符
+    // 当读取对象此属性值时自动调用, 将函数返回的值作为属性值, this为obj
+    get () {
+      return this.firstName + "-" + this.lastName
+    },
+    // 当修改了对象的当前属性值时自动调用, 监视当前属性值的变化, 修改相关的属性, this为obj
+    set (value) {
+      const names = value.split('-')
+      this.firstName = names[0]
+      this.lastName = names[1]
+    }
+  })
+
+console.log(obj.fullName)
+obj.firstName = "c"
+obj.lastName = "d"
+console.log(obj.fullName)
+obj.fullName = 'e-f'
+console.log(obj.firstName,obj.lastName)
+</script>
+</html>

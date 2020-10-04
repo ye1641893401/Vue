@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <!-- 如果问vue不支持那个版本 因为这个语法 ie8不支持其实是问这个语法 -->
+</body>
+<script>
+ //3. Object.defineProperty(obj, propertyName, {}): 给对象添加属性(指定描述符)
+ const obj = {
+    firstName: 'A',
+    lastName: 'B'
+  }
+
+  Object.defineProperty(obj, 'fullName2', {
+    configurable: false, //是否可以重新define
+    enumerable: true, // 是否可以枚举(for..in / keys()) 默认false
+    value: 'A-B', // 指定初始值
+    writable: false // value是否可以修改
+  })
+  console.log(obj.fullName2)  // A-B value: 'A-B', // 指定初始值
+  obj.fullName2 = 'E-F'
+  console.log(obj.fullName2) // A-B  writable: false // value是否可以修改
+
+  let objKeyArr = Object.keys(obj) //返回对象的键组成数组
+
+  console.log(objKeyArr)  //enumerable: false,  数组里没有 fullName2
+  /*
+  configurable: false, //是否可以重新define 报错不可以重新定义
+  Object.defineProperty(obj, 'fullName2', {
+    configurable: true,
+    enumerable: true,
+    value: 'G-H',
+    writable: true
+  })*/
+</script>
+</html>

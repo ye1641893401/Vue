@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src='../vue-2.4.0.js'></script>
+</head>
+<body>
+    <div >
+         <p v-show="flag">爱是一道光</p>  
+        <button @click = "destor">点击销毁实例</button>
+    </div>
+</body>
+<script>
+  new Vue({
+      el:'div',
+      data:{
+          flag:true,
+          timer:null,
+      },
+      methods:{
+        destor(){
+            // 调用销毁函数只是页面不在交互
+            // 但是定时器换在走 内存泄漏
+            // 清楚定时器在生命周期销毁阶段之前
+            this.$destroy()
+        }
+      },
+      
+      beforeCreate(){
+          console.log("beforecreted")
+      },
+      
+      created(){
+          console.log("creted")
+         this.timer = setInterval(()=>{
+             console.log(1)
+            this.flag = !this.flag
+         },1000)
+      },
+      
+      beforeUpdate() {
+      console.log('beforeUpdate()')
+     },
+     updated () {
+      console.log('updated()')
+     },
+      beforMounted(){
+          console.log("beformounted")
+      },
+     
+      mounted(){
+        console.log("mounted")
+      },
+      beforeDestroy(){
+        console.log("beforeDestory")
+        clearInterval(this.timer)
+      },
+     destoryed(){
+        console.log("destoryed")
+     }
+  })
+
+/*
+    点击按钮触发周期函数
+*/
+</script>
+</html>

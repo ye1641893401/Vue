@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!-- <script src = '../vue/vue-2.4.0.js'></script> -->
+    <style>
+    [v-clock]{
+        display:none;
+    }
+    </style>
+</head>
+<body>
+    <div id='App'>
+        <h1 v-cloak>-----------{{msg}}==========</h1>
+        <h1 v-text = 'msg'>-----------{{msg}}==========</h1>
+        <!-- {{}} -->
+                <!-- 只会替换自己的占位符不会把整个元素内容替换 -->
+        <!-- v-text -->
+                <!-- 没有闪烁问题 -->
+                <!-- 会覆盖原来标签中的内容 -->
+        <h2>{{dom}}</h2>
+        <h2 v-text = 'dom'>dom</h2>
+        <h2 v-html = 'dom'>dom</h2>
+        <!-- v-html 可以解析标签 -->
+    </div>
+</body>
+<script src = '../vue/vue-2.4.0.js'></script>
+<script>
+  new Vue({
+      el:'#App',
+      data:{
+       msg:"vclock",
+       dom:"解析标签<b>hello</b>"
+      },
+
+  })
+</script>
+
+</html>

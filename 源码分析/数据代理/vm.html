@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src = '../../vue-2.4.0.js'></script>
+</head>
+<body>
+    
+</body>
+<script>
+ const vm = new Vue({
+     data:{
+         name:"aa"
+     }
+ })
+ console.log(vm.name)
+ console.log(vm)
+ vm.name = "xx"
+ 
+ console.log(vm._data.name) //数据存在data里 不在name里
+</script>
+</html>

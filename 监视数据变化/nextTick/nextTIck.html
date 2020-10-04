@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src='../../vue-2.4.0.js'></script>
+</head>
+<body>
+    <!-- 没有脚手架构建项目的时候两个平级组件数据传递 -->
+    <div>
+       <input type="text" v-model = 'msg' ref = "int" v-if='show'></br>
+       {{res[0].name}}
+       <button @click = "changeData">改变</button>
+    </div>
+</body>
+<script>
+ 
+
+ new Vue({
+     el:'div',
+     data:{
+         msg:'',
+         res:[{name:1,age:2}],
+         show:''
+     },
+     methods:{
+        changeData(){
+            this.res[0].name = this.msg
+        }
+     },
+     mounted(){
+           this.show = true
+         // $nextTick 是在DOM更新循环结束之后执行延迟回调，
+        //  在修改数据之后使用$nextTick 可以在回调中获取到更新后的DOM
+         this.$nextTick(()=>{
+             this.$refs.int.focus()
+         })
+     },
+     
+ })
+
+</script>
+</html>
